@@ -9,6 +9,7 @@ But just an example how to use Disruptor in a bit more non-trivial manner.
 - Same with networking etc.
 - No allocations (like obviously no 'clone' etc. no 'new' on the hot path). Zero GC ideally. Otherwise makes little sense.
 - Did not have time to really add tests although this should have a TON of unit tests. Again - quick one.
+- Ideally spinning strategies or at least yield... I mean... there's ton of optimisations to be made :)
 
 Again just a bit more than basic example how to use it.
 
