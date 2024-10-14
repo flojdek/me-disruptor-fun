@@ -7,7 +7,7 @@ But just an example how to use Disruptor in a bit more non-trivial manner.
 
 - Like obviously we would not write to files and do stdout in the consumers that would be super slow.
 - Same with networking etc.
-- No allocations (like obviously no 'clone' etc.) - zero GC - that's where Disruptor works best and these are its principles.
+- No allocations (like obviously no 'clone' etc. no 'new' on the hot path). Zero GC ideally. Otherwise makes little sense.
 - Did not have time to really add tests although this should have a TON of unit tests. Again - quick one.
 
 Again just a bit more than basic example how to use it.
