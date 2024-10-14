@@ -1,4 +1,4 @@
-package org.fun;
+package com.fun;
 
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;

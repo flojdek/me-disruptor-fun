@@ -1,4 +1,4 @@
-package org.fun;
+package com.fun;
 
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;

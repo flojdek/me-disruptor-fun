@@ -1,5 +1,5 @@
 /* Generated SBE (Simple Binary Encoding) message codec. */
-package com.fun;
+package com.fun.generated;
 
 /**
  * Meta attribute enum for selecting a particular meta attribute value.

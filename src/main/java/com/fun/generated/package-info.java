@@ -2,4 +2,4 @@
 /**
  * null
  */
-package com.fun;
+package com.fun.generated;

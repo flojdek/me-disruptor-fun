@@ -1,11 +1,12 @@
-package org.fun;
+package com.fun;
 
+import com.fun.generated.OrderEncoder;
 import com.lmax.disruptor.EventHandler;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 
 public class ReplicationConsumer implements EventHandler<Order> {
-    private final com.fun.OrderEncoder orderEncoder = new com.fun.OrderEncoder();
+    private final OrderEncoder orderEncoder = new OrderEncoder();
 
     public ReplicationConsumer(String host, int port) {
         // Initialize any network related stuff.

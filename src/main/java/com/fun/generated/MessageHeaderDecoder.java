@@ -1,10 +1,10 @@
 /* Generated SBE (Simple Binary Encoding) message codec. */
-package com.fun;
+package com.fun.generated;
 
-import org.agrona.MutableDirectBuffer;
+import org.agrona.DirectBuffer;
 
 @SuppressWarnings("all")
-public final class MessageHeaderEncoder
+public final class MessageHeaderDecoder
 {
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -13,9 +13,9 @@ public final class MessageHeaderEncoder
     public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
     private int offset;
-    private MutableDirectBuffer buffer;
+    private DirectBuffer buffer;
 
-    public MessageHeaderEncoder wrap(final MutableDirectBuffer buffer, final int offset)
+    public MessageHeaderDecoder wrap(final DirectBuffer buffer, final int offset)
     {
         if (buffer != this.buffer)
         {
@@ -26,7 +26,7 @@ public final class MessageHeaderEncoder
         return this;
     }
 
-    public MutableDirectBuffer buffer()
+    public DirectBuffer buffer()
     {
         return buffer;
     }
@@ -61,6 +61,11 @@ public final class MessageHeaderEncoder
         return 2;
     }
 
+    public static int blockLengthSinceVersion()
+    {
+        return 0;
+    }
+
     public static int blockLengthNullValue()
     {
         return 65535;
@@ -76,10 +81,9 @@ public final class MessageHeaderEncoder
         return 65534;
     }
 
-    public MessageHeaderEncoder blockLength(final int value)
+    public int blockLength()
     {
-        buffer.putShort(offset + 0, (short)value, BYTE_ORDER);
-        return this;
+        return (buffer.getShort(offset + 0, BYTE_ORDER) & 0xFFFF);
     }
 
 
@@ -91,6 +95,11 @@ public final class MessageHeaderEncoder
     public static int templateIdEncodingLength()
     {
         return 2;
+    }
+
+    public static int templateIdSinceVersion()
+    {
+        return 0;
     }
 
     public static int templateIdNullValue()
@@ -108,10 +117,9 @@ public final class MessageHeaderEncoder
         return 65534;
     }
 
-    public MessageHeaderEncoder templateId(final int value)
+    public int templateId()
     {
-        buffer.putShort(offset + 2, (short)value, BYTE_ORDER);
-        return this;
+        return (buffer.getShort(offset + 2, BYTE_ORDER) & 0xFFFF);
     }
 
 
@@ -123,6 +131,11 @@ public final class MessageHeaderEncoder
     public static int schemaIdEncodingLength()
     {
         return 2;
+    }
+
+    public static int schemaIdSinceVersion()
+    {
+        return 0;
     }
 
     public static int schemaIdNullValue()
@@ -140,10 +153,9 @@ public final class MessageHeaderEncoder
         return 65534;
     }
 
-    public MessageHeaderEncoder schemaId(final int value)
+    public int schemaId()
     {
-        buffer.putShort(offset + 4, (short)value, BYTE_ORDER);
-        return this;
+        return (buffer.getShort(offset + 4, BYTE_ORDER) & 0xFFFF);
     }
 
 
@@ -155,6 +167,11 @@ public final class MessageHeaderEncoder
     public static int versionEncodingLength()
     {
         return 2;
+    }
+
+    public static int versionSinceVersion()
+    {
+        return 0;
     }
 
     public static int versionNullValue()
@@ -172,10 +189,9 @@ public final class MessageHeaderEncoder
         return 65534;
     }
 
-    public MessageHeaderEncoder version(final int value)
+    public int version()
     {
-        buffer.putShort(offset + 6, (short)value, BYTE_ORDER);
-        return this;
+        return (buffer.getShort(offset + 6, BYTE_ORDER) & 0xFFFF);
     }
 
 
@@ -196,9 +212,20 @@ public final class MessageHeaderEncoder
             return builder;
         }
 
-        final MessageHeaderDecoder decoder = new MessageHeaderDecoder();
-        decoder.wrap(buffer, offset);
+        builder.append('(');
+        builder.append("blockLength=");
+        builder.append(this.blockLength());
+        builder.append('|');
+        builder.append("templateId=");
+        builder.append(this.templateId());
+        builder.append('|');
+        builder.append("schemaId=");
+        builder.append(this.schemaId());
+        builder.append('|');
+        builder.append("version=");
+        builder.append(this.version());
+        builder.append(')');
 
-        return decoder.appendTo(builder);
+        return builder;
     }
 }

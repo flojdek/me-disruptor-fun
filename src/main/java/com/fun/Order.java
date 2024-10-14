@@ -1,4 +1,4 @@
-package org.fun;
+package com.fun;
 
 public class Order implements Cloneable {
     public enum Side { BUY, SELL }

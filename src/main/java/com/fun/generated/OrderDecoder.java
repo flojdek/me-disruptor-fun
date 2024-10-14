@@ -1,14 +1,14 @@
 /* Generated SBE (Simple Binary Encoding) message codec. */
-package com.fun;
+package com.fun.generated;
 
-import org.agrona.MutableDirectBuffer;
+import org.agrona.DirectBuffer;
 
 
 /**
  * Order message
  */
 @SuppressWarnings("all")
-public final class OrderEncoder
+public final class OrderDecoder
 {
     public static final int BLOCK_LENGTH = 16;
     public static final int TEMPLATE_ID = 1;
@@ -17,10 +17,12 @@ public final class OrderEncoder
     public static final String SEMANTIC_VERSION = "";
     public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
-    private final OrderEncoder parentMessage = this;
-    private MutableDirectBuffer buffer;
+    private final OrderDecoder parentMessage = this;
+    private DirectBuffer buffer;
     private int offset;
     private int limit;
+    int actingBlockLength;
+    int actingVersion;
 
     public int sbeBlockLength()
     {
@@ -47,7 +49,7 @@ public final class OrderEncoder
         return "";
     }
 
-    public MutableDirectBuffer buffer()
+    public DirectBuffer buffer()
     {
         return buffer;
     }
@@ -57,29 +59,62 @@ public final class OrderEncoder
         return offset;
     }
 
-    public OrderEncoder wrap(final MutableDirectBuffer buffer, final int offset)
+    public OrderDecoder wrap(
+        final DirectBuffer buffer,
+        final int offset,
+        final int actingBlockLength,
+        final int actingVersion)
     {
         if (buffer != this.buffer)
         {
             this.buffer = buffer;
         }
         this.offset = offset;
-        limit(offset + BLOCK_LENGTH);
+        this.actingBlockLength = actingBlockLength;
+        this.actingVersion = actingVersion;
+        limit(offset + actingBlockLength);
 
         return this;
     }
 
-    public OrderEncoder wrapAndApplyHeader(
-        final MutableDirectBuffer buffer, final int offset, final MessageHeaderEncoder headerEncoder)
+    public OrderDecoder wrapAndApplyHeader(
+        final DirectBuffer buffer,
+        final int offset,
+        final MessageHeaderDecoder headerDecoder)
     {
-        headerEncoder
-            .wrap(buffer, offset)
-            .blockLength(BLOCK_LENGTH)
-            .templateId(TEMPLATE_ID)
-            .schemaId(SCHEMA_ID)
-            .version(SCHEMA_VERSION);
+        headerDecoder.wrap(buffer, offset);
 
-        return wrap(buffer, offset + MessageHeaderEncoder.ENCODED_LENGTH);
+        final int templateId = headerDecoder.templateId();
+        if (TEMPLATE_ID != templateId)
+        {
+            throw new IllegalStateException("Invalid TEMPLATE_ID: " + templateId);
+        }
+
+        return wrap(
+            buffer,
+            offset + MessageHeaderDecoder.ENCODED_LENGTH,
+            headerDecoder.blockLength(),
+            headerDecoder.version());
+    }
+
+    public OrderDecoder sbeRewind()
+    {
+        return wrap(buffer, offset, actingBlockLength, actingVersion);
+    }
+
+    public int sbeDecodedLength()
+    {
+        final int currentLimit = limit();
+        sbeSkip();
+        final int decodedLength = encodedLength();
+        limit(currentLimit);
+
+        return decodedLength;
+    }
+
+    public int actingVersion()
+    {
+        return actingVersion;
     }
 
     public int encodedLength()
@@ -142,10 +177,9 @@ public final class OrderEncoder
         return 4294967294L;
     }
 
-    public OrderEncoder side(final long value)
+    public long side()
     {
-        buffer.putInt(offset + 0, (int)value, BYTE_ORDER);
-        return this;
+        return (buffer.getInt(offset + 0, BYTE_ORDER) & 0xFFFF_FFFFL);
     }
 
 
@@ -194,10 +228,9 @@ public final class OrderEncoder
         return 4294967294L;
     }
 
-    public OrderEncoder type(final long value)
+    public long type()
     {
-        buffer.putInt(offset + 4, (int)value, BYTE_ORDER);
-        return this;
+        return (buffer.getInt(offset + 4, BYTE_ORDER) & 0xFFFF_FFFFL);
     }
 
 
@@ -246,10 +279,9 @@ public final class OrderEncoder
         return 4294967294L;
     }
 
-    public OrderEncoder price(final long value)
+    public long price()
     {
-        buffer.putInt(offset + 8, (int)value, BYTE_ORDER);
-        return this;
+        return (buffer.getInt(offset + 8, BYTE_ORDER) & 0xFFFF_FFFFL);
     }
 
 
@@ -298,10 +330,9 @@ public final class OrderEncoder
         return 4294967294L;
     }
 
-    public OrderEncoder quantity(final long value)
+    public long quantity()
     {
-        buffer.putInt(offset + 12, (int)value, BYTE_ORDER);
-        return this;
+        return (buffer.getInt(offset + 12, BYTE_ORDER) & 0xFFFF_FFFFL);
     }
 
 
@@ -312,7 +343,10 @@ public final class OrderEncoder
             return "";
         }
 
-        return appendTo(new StringBuilder()).toString();
+        final OrderDecoder decoder = new OrderDecoder();
+        decoder.wrap(buffer, offset, actingBlockLength, actingVersion);
+
+        return decoder.appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)
@@ -322,9 +356,48 @@ public final class OrderEncoder
             return builder;
         }
 
-        final OrderDecoder decoder = new OrderDecoder();
-        decoder.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);
+        final int originalLimit = limit();
+        limit(offset + actingBlockLength);
+        builder.append("[Order](sbeTemplateId=");
+        builder.append(TEMPLATE_ID);
+        builder.append("|sbeSchemaId=");
+        builder.append(SCHEMA_ID);
+        builder.append("|sbeSchemaVersion=");
+        if (parentMessage.actingVersion != SCHEMA_VERSION)
+        {
+            builder.append(parentMessage.actingVersion);
+            builder.append('/');
+        }
+        builder.append(SCHEMA_VERSION);
+        builder.append("|sbeBlockLength=");
+        if (actingBlockLength != BLOCK_LENGTH)
+        {
+            builder.append(actingBlockLength);
+            builder.append('/');
+        }
+        builder.append(BLOCK_LENGTH);
+        builder.append("):");
+        builder.append("side=");
+        builder.append(this.side());
+        builder.append('|');
+        builder.append("type=");
+        builder.append(this.type());
+        builder.append('|');
+        builder.append("price=");
+        builder.append(this.price());
+        builder.append('|');
+        builder.append("quantity=");
+        builder.append(this.quantity());
 
-        return decoder.appendTo(builder);
+        limit(originalLimit);
+
+        return builder;
+    }
+    
+    public OrderDecoder sbeSkip()
+    {
+        sbeRewind();
+
+        return this;
     }
 }
